@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OrtodoncIA Planificador</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f2f2f7; color: #1c1c1e; }
+        .ios-card { background: #ffffff; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .ios-button { background: #007aff; color: white; border-radius: 10px; font-weight: 600; }
+    </style>
+</head>
+<body class="pb-24">
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200 px-4 py-3 flex justify-between items-center">
+        <h1 class="text-lg font-bold text-gray-900"><i class="fa-solid fa-tooth text-blue-500 mr-2"></i>OrtodoncIA Plan</h1>
+        <span class="text-xs bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full font-medium">App iPhone</span>
+    </header>
+    <main class="max-w-md mx-auto p-4 space-y-4">
+        <section class="ios-card p-4 space-y-3">
+            <h2 class="text-md font-semibold text-gray-800"><i class="fa-solid fa-user-injured text-blue-500 mr-2"></i>Datos del Paciente</h2>
+            <input type="text" id="patientName" placeholder="Nombre del Paciente" class="w-full px-3 py-2 bg-gray-100 rounded-lg text-sm border-none">
+            <div class="grid grid-cols-2 gap-2">
+                <select id="malocclusion" class="px-3 py-2 bg-gray-100 rounded-lg text-sm border-none">
+                    <option value="Clase I">Clase I</option>
+                    <option value="Clase II Div 1">Clase II Div 1</option>
+                    <option value="Clase II Div 2">Clase II Div 2</option>
+                    <option value="Clase III">Clase III</option>
+                </select>
+                <select id="treatmentType" class="px-3 py-2 bg-gray-100 rounded-lg text-sm border-none">
+                    <option value="Alineadores">Alineadores</option>
+                    <option value="Brackets Vestibulares">Brackets Vestibulares</option>
+                    <option value="Ortopedia Maxilar">Ortopedia Maxilar</option>
+                </select>
+            </div>
+        </section>
+        <section class="ios-card p-4 space-y-3">
+            <h2 class="text-md font-semibold text-gray-800"><i class="fa-solidFolderOpen text-blue-500 mr-2"></i>Registros Diagnósticos</h2>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+                <label class="border-2 border-dashed border-gray-300 rounded-xl p-3 text-center cursor-pointer block">
+                    <i class="fa-solid fa-camera text-blue-500 text-lg mb-1 block"></i>
+                    <span class="font-medium">Fotos Clínicas</span>
+                    <input type="file" multiple accept="image/*" class="hidden" onchange="up(this,'p')">
+                    <span id="p" class="block text-gray-400 mt-1">0 archivos</span>
+                </label>
+                <label class="border-2 border-dashed border-gray-300 rounded-xl p-3 text-center cursor-pointer block">
+                    <i class="fa-solid fa-cube text-blue-500 text-lg mb-1 block"></i>
+                    <span class="font-medium">Modelos STL / CBCT</span>
+                    <input type="file" multiple class="hidden" onchange="up(this,'s')">
+                    <span id="s" class="block text-gray-400 mt-1">0 archivos</span>
+                </label>
+            </div>
+            <button onclick="gen()" class="w-full ios-button py-3 text-sm mt-2 shadow-sm text-white"><i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Generar Plan Biomecánico</button>
+        </section>
+        <section id="planSec" class="ios-card p-4 space-y-3 hidden">
+            <h2 class="text-md font-semibold text-gray-800"><i class="fa-solid fa-list-check text-green-500 mr-2"></i>Plan Sugerido y Secuencia</h2>
+            <div id="planContent" class="space-y-3 text-sm text-gray-700"></div>
+        </section>
+        <section id="resSec" class="ios-card p-4 space-y-3 hidden">
+            <h2 class="text-md font-semibold text-gray-800"><i class="fa-solid fa-flag-checkered text-purple-500 mr-2"></i>Resultado Final Simulado</h2>
+            <div class="bg-gray-100 rounded-xl p-4 text-center space-y-2">
+                <p class="text-xs font-semibold text-green-600">Simulación Oclusal Generada con Éxito</p>
+                <div class="h-28 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-xs">
+                    [Visualizador de Alineación Final]
+                </div>
+                <p id="sumText" class="text-xs text-gray-600 px-2"></p>
+            </div>
+        </section>
+    </main>
+    <script>
+        function up(i, id) { document.getElementById(id).innerText = i.files.length + ' archivos'; }
+        function gen() {
+            let n = document.getElementById('patientName').value || 'Paciente';
+            let m = document.getElementById('malocclusion').value;
+            let t = document.getElementById('treatmentType').value;
+            document.getElementById('planSec').classList.remove('hidden');
+            document.getElementById('resSec').classList.remove('hidden');
+            document.getElementById('planContent').innerHTML = `
+                <div class="border-l-2 border-blue-500 pl-3 space-y-1">
+                    <p class="font-semibold text-gray-900">Fase 1: Alineación y Nivelación (${m})</p>
+                    <p class="text-xs text-gray-600">Desrotación y control de torques iniciales mediante ${t}.</p>
+                </div>
+                <div class="border-l-2 border-blue-500 pl-3 space-y-1">
+                    <p class="font-semibold text-gray-900">Fase 2: Mecánica Activa y Corrección</p>
+                    <p class="text-xs text-gray-600">Secuencia biomecánica orientada a oclusión clase I molar y canina con guía anterior.</p>
+                </div>`;
+            document.getElementById('sumText').innerHTML = `Tratamiento planificado para <b>${n}</b> (${t}). Resultado final con máxima intercuspidación estable.`;
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
